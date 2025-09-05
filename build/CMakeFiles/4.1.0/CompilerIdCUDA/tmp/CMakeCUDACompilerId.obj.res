@@ -1,0 +1,1 @@
+-D__CUDA_ARCH__=750 -D__CUDA_ARCH_LIST__=750 -nologo -c -TP  -DCUDA_DOUBLE_MATH_FUNCTIONS -EHsc "-IC:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.0/bin/../include" "-IC:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.0/bin/../include/cccl"     "C:\Users\Logan\source\repos\OmniField\build\CMakeFiles\4.1.0\CompilerIdCUDA\tmp\CMakeCUDACompilerId.cudafe1.cpp" 
