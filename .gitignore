@@ -1,0 +1,46 @@
+# Build dirs
+/build/
+/build-*/
+/out/
+/bin/
+/lib/
+
+# VS
+/.vs/
+*.vcxproj.user
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Testing/
+CTestTestfile.cmake
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+
+# Ninja
+*.ninja
+.ninja_deps
+.ninja_log
+
+# Binaries / debug
+*.pdb
+*.ilk
+*.obj
+*.exe
+*.dll
+*.lib
+*.exp
+*.log
+
+# CUDA intermediates
+*.cudafe1.cpp
+*.fatbin.c
+*.ptx
+*.cubin
+*.cudafe+*
+*.linkinfo
+*.module_id
+*.nvvcg.*
+tmpxft_*

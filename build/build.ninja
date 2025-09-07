@@ -41,78 +41,51 @@ include CMakeFiles\rules.ninja
 
 cmake_ninja_workdir = C$:\Users\Logan\source\repos\OmniField\build\
 # =============================================================================
-# Object build statements for STATIC_LIBRARY target sdf_marcher_cuda
+# Object build statements for STATIC_LIBRARY target omnifield_core
 
 
 #############################################
-# Order-only phony target for sdf_marcher_cuda
+# Order-only phony target for omnifield_core
 
-build cmake_object_order_depends_target_sdf_marcher_cuda: phony || .
+build cmake_object_order_depends_target_omnifield_core: phony || .
 
-build CMakeFiles\sdf_marcher_cuda.dir\src\core\marcher\cuda_marcher_impl.cu.obj: CUDA_COMPILER__sdf_marcher_cuda_unscanned_Release C$:\Users\Logan\source\repos\OmniField\src\core\marcher\cuda_marcher_impl.cu || cmake_object_order_depends_target_sdf_marcher_cuda
+build CMakeFiles\omnifield_core.dir\src\core\marcher\cuda_marcher_impl.cu.obj: CUDA_COMPILER__omnifield_core_unscanned_Release C$:\Users\Logan\source\repos\OmniField\src\core\marcher\cuda_marcher_impl.cu || cmake_object_order_depends_target_omnifield_core
   CONFIG = Release
-  DEP_FILE = CMakeFiles\sdf_marcher_cuda.dir\src\core\marcher\cuda_marcher_impl.cu.obj.d
-  FLAGS = -D_WINDOWS -Xcompiler=" /EHsc" -Xcompiler="-O2 -Ob2" -DNDEBUG -std=c++20 "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD --use_fast_math -Xptxas -O3 --expt-relaxed-constexpr --extended-lambda
-  INCLUDES = -IC:\Users\Logan\source\repos\OmniField\include -IC:\Users\Logan\source\repos\OmniField\src -isystem "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.0\include" -isystem "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.0\include\cccl"
-  OBJECT_DIR = CMakeFiles\sdf_marcher_cuda.dir
-  OBJECT_FILE_DIR = CMakeFiles\sdf_marcher_cuda.dir\src\core\marcher
-  TARGET_COMPILE_PDB = CMakeFiles\sdf_marcher_cuda.dir\sdf_marcher_cuda.pdb
-  TARGET_PDB = sdf_marcher_cuda.pdb
+  DEP_FILE = CMakeFiles\omnifield_core.dir\src\core\marcher\cuda_marcher_impl.cu.obj.d
+  FLAGS = -D_WINDOWS -Xcompiler=" /EHsc" -Xcompiler="-O2 -Ob2" -DNDEBUG -std=c++20 "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  INCLUDES = -IC:\Users\Logan\source\repos\OmniField\src -IC:\Users\Logan\source\repos\OmniField\app -isystem "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.0\include" -isystem "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.0\include\cccl"
+  OBJECT_DIR = CMakeFiles\omnifield_core.dir
+  OBJECT_FILE_DIR = CMakeFiles\omnifield_core.dir\src\core\marcher
+  TARGET_COMPILE_PDB = CMakeFiles\omnifield_core.dir\omnifield_core.pdb
+  TARGET_PDB = omnifield_core.pdb
 
-build CMakeFiles\sdf_marcher_cuda.dir\src\core\marcher\sdf_primitives_impl.cu.obj: CUDA_COMPILER__sdf_marcher_cuda_unscanned_Release C$:\Users\Logan\source\repos\OmniField\src\core\marcher\sdf_primitives_impl.cu || cmake_object_order_depends_target_sdf_marcher_cuda
+build CMakeFiles\omnifield_core.dir\src\host\usd_loader\UsdDeviceSceneLoader.cpp.obj: CXX_COMPILER__omnifield_core_unscanned_Release C$:\Users\Logan\source\repos\OmniField\src\host\usd_loader\UsdDeviceSceneLoader.cpp || cmake_object_order_depends_target_omnifield_core
   CONFIG = Release
-  DEP_FILE = CMakeFiles\sdf_marcher_cuda.dir\src\core\marcher\sdf_primitives_impl.cu.obj.d
-  FLAGS = -D_WINDOWS -Xcompiler=" /EHsc" -Xcompiler="-O2 -Ob2" -DNDEBUG -std=c++20 "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD --use_fast_math -Xptxas -O3 --expt-relaxed-constexpr --extended-lambda
-  INCLUDES = -IC:\Users\Logan\source\repos\OmniField\include -IC:\Users\Logan\source\repos\OmniField\src -isystem "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.0\include" -isystem "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.0\include\cccl"
-  OBJECT_DIR = CMakeFiles\sdf_marcher_cuda.dir
-  OBJECT_FILE_DIR = CMakeFiles\sdf_marcher_cuda.dir\src\core\marcher
-  TARGET_COMPILE_PDB = CMakeFiles\sdf_marcher_cuda.dir\sdf_marcher_cuda.pdb
-  TARGET_PDB = sdf_marcher_cuda.pdb
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++20 -MD
+  INCLUDES = -IC:\Users\Logan\source\repos\OmniField\src -IC:\Users\Logan\source\repos\OmniField\app -external:I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.0\include" -external:I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.0\include\cccl" -external:W0
+  OBJECT_DIR = CMakeFiles\omnifield_core.dir
+  OBJECT_FILE_DIR = CMakeFiles\omnifield_core.dir\src\host\usd_loader
+  TARGET_COMPILE_PDB = CMakeFiles\omnifield_core.dir\omnifield_core.pdb
+  TARGET_PDB = omnifield_core.pdb
 
 
 # =============================================================================
-# Link build statements for STATIC_LIBRARY target sdf_marcher_cuda
+# Link build statements for STATIC_LIBRARY target omnifield_core
 
 
 #############################################
-# Link the static library sdf_marcher_cuda.lib
+# Link the static library omnifield_core.lib
 
-build sdf_marcher_cuda.lib: CUDA_STATIC_LIBRARY_LINKER__sdf_marcher_cuda_Release CMakeFiles\sdf_marcher_cuda.dir\src\core\marcher\cuda_marcher_impl.cu.obj CMakeFiles\sdf_marcher_cuda.dir\src\core\marcher\sdf_primitives_impl.cu.obj
+build omnifield_core.lib: CXX_STATIC_LIBRARY_LINKER__omnifield_core_Release CMakeFiles\omnifield_core.dir\src\core\marcher\cuda_marcher_impl.cu.obj CMakeFiles\omnifield_core.dir\src\host\usd_loader\UsdDeviceSceneLoader.cpp.obj
   CONFIG = Release
-  LANGUAGE_COMPILE_FLAGS = -D_WINDOWS -Xcompiler=" /EHsc" -Xcompiler="-O2 -Ob2" -DNDEBUG "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  LANGUAGE_COMPILE_FLAGS = /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -MD
   LINK_FLAGS = /machine:x64
-  OBJECT_DIR = CMakeFiles\sdf_marcher_cuda.dir
+  OBJECT_DIR = CMakeFiles\omnifield_core.dir
   POST_BUILD = cd .
   PRE_LINK = cd .
-  TARGET_COMPILE_PDB = CMakeFiles\sdf_marcher_cuda.dir\sdf_marcher_cuda.pdb
-  TARGET_FILE = sdf_marcher_cuda.lib
-  TARGET_PDB = sdf_marcher_cuda.pdb
-
-# =============================================================================
-# Object build statements for OBJECT_LIBRARY target usd_loader
-
-
-#############################################
-# Order-only phony target for usd_loader
-
-build cmake_object_order_depends_target_usd_loader: phony || cmake_object_order_depends_target_sdf_marcher_cuda
-
-build CMakeFiles\usd_loader.dir\src\host\usd_loader\UsdDeviceSceneLoader.cpp.obj: CXX_COMPILER__usd_loader_unscanned_Release C$:\Users\Logan\source\repos\OmniField\src\host\usd_loader\UsdDeviceSceneLoader.cpp || cmake_object_order_depends_target_usd_loader
-  CONFIG = Release
-  DEFINES = -DOMNIFIELD_USD_FALLBACK=1
-  FLAGS = /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++20 -MD
-  INCLUDES = -IC:\Users\Logan\source\repos\OmniField\include -IC:\Users\Logan\source\repos\OmniField\src -external:I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.0\include" -external:I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.0\include\cccl" -external:W0
-  OBJECT_DIR = CMakeFiles\usd_loader.dir
-  OBJECT_FILE_DIR = CMakeFiles\usd_loader.dir\src\host\usd_loader
-  TARGET_COMPILE_PDB = CMakeFiles\usd_loader.dir\
-  TARGET_PDB = ""
-
-
-
-#############################################
-# Object library usd_loader
-
-build usd_loader: phony CMakeFiles\usd_loader.dir\src\host\usd_loader\UsdDeviceSceneLoader.cpp.obj
+  TARGET_COMPILE_PDB = CMakeFiles\omnifield_core.dir\omnifield_core.pdb
+  TARGET_FILE = omnifield_core.lib
+  TARGET_PDB = omnifield_core.pdb
 
 # =============================================================================
 # Object build statements for EXECUTABLE target omnifield_demo
@@ -121,13 +94,12 @@ build usd_loader: phony CMakeFiles\usd_loader.dir\src\host\usd_loader\UsdDeviceS
 #############################################
 # Order-only phony target for omnifield_demo
 
-build cmake_object_order_depends_target_omnifield_demo: phony || cmake_object_order_depends_target_sdf_marcher_cuda cmake_object_order_depends_target_usd_loader
+build cmake_object_order_depends_target_omnifield_demo: phony || cmake_object_order_depends_target_omnifield_core
 
 build CMakeFiles\omnifield_demo.dir\app\example_demo.cpp.obj: CXX_COMPILER__omnifield_demo_unscanned_Release C$:\Users\Logan\source\repos\OmniField\app\example_demo.cpp || cmake_object_order_depends_target_omnifield_demo
   CONFIG = Release
-  DEFINES = -DOMNIFIELD_USD_FALLBACK=1
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++20 -MD
-  INCLUDES = -IC:\Users\Logan\source\repos\OmniField\include -IC:\Users\Logan\source\repos\OmniField\src -external:I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.0\include" -external:I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.0\include\cccl" -external:W0
+  INCLUDES = -IC:\Users\Logan\source\repos\OmniField\src -IC:\Users\Logan\source\repos\OmniField\app -external:I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.0\include" -external:I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.0\include\cccl" -external:W0
   OBJECT_DIR = CMakeFiles\omnifield_demo.dir
   OBJECT_FILE_DIR = CMakeFiles\omnifield_demo.dir\app
   TARGET_COMPILE_PDB = CMakeFiles\omnifield_demo.dir\
@@ -141,11 +113,11 @@ build CMakeFiles\omnifield_demo.dir\app\example_demo.cpp.obj: CXX_COMPILER__omni
 #############################################
 # Link the executable omnifield_demo.exe
 
-build omnifield_demo.exe: CXX_EXECUTABLE_LINKER__omnifield_demo_Release CMakeFiles\usd_loader.dir\src\host\usd_loader\UsdDeviceSceneLoader.cpp.obj CMakeFiles\omnifield_demo.dir\app\example_demo.cpp.obj | sdf_marcher_cuda.lib sdf_marcher_cuda.lib C$:\Program$ Files\NVIDIA$ GPU$ Computing$ Toolkit\CUDA\v13.0\lib\x64\cudart.lib || sdf_marcher_cuda.lib usd_loader
+build omnifield_demo.exe: CXX_EXECUTABLE_LINKER__omnifield_demo_Release CMakeFiles\omnifield_demo.dir\app\example_demo.cpp.obj | omnifield_core.lib C$:\Program$ Files\NVIDIA$ GPU$ Computing$ Toolkit\CUDA\v13.0\lib\x64\cudart.lib || omnifield_core.lib
   CONFIG = Release
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -MD
   LINK_FLAGS = /machine:x64 /INCREMENTAL:NO /subsystem:console
-  LINK_LIBRARIES = sdf_marcher_cuda.lib  sdf_marcher_cuda.lib  "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.0\lib\x64\cudart.lib"  cudadevrt.lib  cudart.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  LINK_LIBRARIES = omnifield_core.lib  "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.0\lib\x64\cudart.lib"  cudadevrt.lib  cudart.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
   LINK_PATH = -LIBPATH:"C:\PROGRA~1\NVIDIA GPU Computing Toolkit\CUDA\v13.0\lib\x64"
   OBJECT_DIR = CMakeFiles\omnifield_demo.dir
   POST_BUILD = cd .
@@ -182,9 +154,9 @@ build rebuild_cache: phony CMakeFiles\rebuild_cache.util
 # =============================================================================
 # Target aliases.
 
-build omnifield_demo: phony omnifield_demo.exe
+build omnifield_core: phony omnifield_core.lib
 
-build sdf_marcher_cuda: phony sdf_marcher_cuda.lib
+build omnifield_demo: phony omnifield_demo.exe
 
 # =============================================================================
 # Folder targets.
@@ -194,7 +166,7 @@ build sdf_marcher_cuda: phony sdf_marcher_cuda.lib
 #############################################
 # Folder: C:/Users/Logan/source/repos/OmniField/build
 
-build all: phony sdf_marcher_cuda.lib usd_loader omnifield_demo.exe
+build all: phony omnifield_core.lib omnifield_demo.exe
 
 # =============================================================================
 # Built-in targets

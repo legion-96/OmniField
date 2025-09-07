@@ -1,5 +1,4 @@
-C:/Users/Logan/source/repos/OmniField/build/CMakeFiles/sdf_marcher_cuda.dir
-C:/Users/Logan/source/repos/OmniField/build/CMakeFiles/usd_loader.dir
+C:/Users/Logan/source/repos/OmniField/build/CMakeFiles/omnifield_core.dir
 C:/Users/Logan/source/repos/OmniField/build/CMakeFiles/omnifield_demo.dir
 C:/Users/Logan/source/repos/OmniField/build/CMakeFiles/edit_cache.dir
 C:/Users/Logan/source/repos/OmniField/build/CMakeFiles/rebuild_cache.dir

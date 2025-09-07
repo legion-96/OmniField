@@ -1,7 +1,6 @@
 # ninja log v6
-38	479	7788046346998490	CMakeFiles/omnifield_demo.dir/app/example_demo.cpp.obj	519b7a42adffcd06
-35	527	7788046346968493	CMakeFiles/usd_loader.dir/src/host/usd_loader/UsdDeviceSceneLoader.cpp.obj	f8f08d3597b9f8c8
-33	1507	7788046346948559	CMakeFiles/sdf_marcher_cuda.dir/src/core/marcher/sdf_primitives_impl.cu.obj	38ad9282de18181f
-29	1550	7788046346909064	CMakeFiles/sdf_marcher_cuda.dir/src/core/marcher/cuda_marcher_impl.cu.obj	67793fc6f6bd436
-1551	1582	7788046362121866	sdf_marcher_cuda.lib	a548857aabef989c
-1582	1672	7788046362387510	omnifield_demo.exe	1c89577f74f0018f
+19	625	7789834031745107	CMakeFiles/omnifield_core.dir/src/host/usd_loader/UsdDeviceSceneLoader.cpp.obj	677b728a08bd9dd7
+21	1197	7789834031760781	CMakeFiles/omnifield_demo.dir/app/example_demo.cpp.obj	8073cc561e76398e
+16	1712	7789834031716773	CMakeFiles/omnifield_core.dir/src/core/marcher/cuda_marcher_impl.cu.obj	1a1b35d6cb7e75d9
+1713	1745	7789834048684896	omnifield_core.lib	b821bf68e29725ff
+1745	1839	7789834049005611	omnifield_demo.exe	403238156c6a3bae

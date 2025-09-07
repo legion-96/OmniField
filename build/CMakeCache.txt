@@ -14,9 +14,6 @@
 # EXTERNAL cache entries
 ########################
 
-//Build example applications
-BUILD_EXAMPLES:BOOL=ON
-
 //Path to a program.
 CMAKE_AR:FILEPATH=C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/lib.exe
 
@@ -478,14 +475,8 @@ OmniField_IS_TOP_LEVEL:STATIC=ON
 //Value Computed by CMake
 OmniField_SOURCE_DIR:STATIC=C:/Users/Logan/source/repos/OmniField
 
-//Enable CUDA marcher kernels
+//Enable CUDA
 WITH_CUDA:BOOL=ON
-
-//Build unit tests
-WITH_TESTS:BOOL=OFF
-
-//Enable USD/OpenUSD loader support
-WITH_USD:BOOL=OFF
 
 
 ########################

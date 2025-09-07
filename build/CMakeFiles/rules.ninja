@@ -20,7 +20,7 @@ msvc_deps_prefix = Note: including file:
 #############################################
 # Rule for compiling CUDA files.
 
-rule CUDA_COMPILER__sdf_marcher_cuda_unscanned_Release
+rule CUDA_COMPILER__omnifield_core_unscanned_Release
   depfile = $DEP_FILE
   deps = gcc
   command = ${LAUNCHER}${CODE_CHECK}"C:\PROGRA~1\NVIDIA GPU Computing Toolkit\CUDA\v13.0\bin\nvcc.exe" -forward-unknown-to-host-compiler $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -x cu -c $in -o $out -Xcompiler=-Fd$TARGET_COMPILE_PDB,-FS
@@ -28,18 +28,9 @@ rule CUDA_COMPILER__sdf_marcher_cuda_unscanned_Release
 
 
 #############################################
-# Rule for linking CUDA static library.
-
-rule CUDA_STATIC_LIBRARY_LINKER__sdf_marcher_cuda_Release
-  command = C:\WINDOWS\system32\cmd.exe /C "$PRE_LINK && C:\PROGRA~1\MICROS~1\2022\Community\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\lib.exe /nologo $LINK_FLAGS /out:$TARGET_FILE $in && $POST_BUILD"
-  description = Linking CUDA static library $TARGET_FILE
-  restat = $RESTAT
-
-
-#############################################
 # Rule for generating CXX dependencies.
 
-rule CXX_SCAN__usd_loader_Release
+rule CXX_SCAN__omnifield_core_Release
   deps = msvc
   command = C:\PROGRA~1\MICROS~1\2022\Community\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\cl.exe $DEFINES $INCLUDES $FLAGS $in -nologo -TP -showIncludes -scanDependencies $DYNDEP_INTERMEDIATE_FILE -Fo$OBJ_FILE
   description = Scanning $in for CXX dependencies
@@ -48,8 +39,8 @@ rule CXX_SCAN__usd_loader_Release
 #############################################
 # Rule to generate ninja dyndep files for CXX.
 
-rule CXX_DYNDEP__usd_loader_Release
-  command = "C:\Program Files\CMake\bin\cmake.exe" -E cmake_ninja_dyndep --tdi=CMakeFiles\usd_loader.dir\CXXDependInfo.json --lang=CXX --modmapfmt=msvc --dd=$out @$out.rsp
+rule CXX_DYNDEP__omnifield_core_Release
+  command = "C:\Program Files\CMake\bin\cmake.exe" -E cmake_ninja_dyndep --tdi=CMakeFiles\omnifield_core.dir\CXXDependInfo.json --lang=CXX --modmapfmt=msvc --dd=$out @$out.rsp
   description = Generating CXX dyndep file $out
   rspfile = $out.rsp
   rspfile_content = $in
@@ -59,7 +50,7 @@ rule CXX_DYNDEP__usd_loader_Release
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__usd_loader_scanned_Release
+rule CXX_COMPILER__omnifield_core_scanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~1\2022\Community\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes @$DYNDEP_MODULE_MAP_FILE /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -68,10 +59,19 @@ rule CXX_COMPILER__usd_loader_scanned_Release
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__usd_loader_unscanned_Release
+rule CXX_COMPILER__omnifield_core_unscanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~1\2022\Community\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
+
+
+#############################################
+# Rule for linking CXX static library.
+
+rule CXX_STATIC_LIBRARY_LINKER__omnifield_core_Release
+  command = C:\WINDOWS\system32\cmd.exe /C "$PRE_LINK && C:\PROGRA~1\MICROS~1\2022\Community\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\lib.exe /nologo $LINK_FLAGS /out:$TARGET_FILE $in && $POST_BUILD"
+  description = Linking CXX static library $TARGET_FILE
+  restat = $RESTAT
 
 
 #############################################
