@@ -1,10 +1,14 @@
 #include "cuda_marcher_core.h"
+#include "cuda_sphere_tracer.cuh"
+#include "cutlass_transforms.cuh"
+#include "cufft_sdf_generator.cuh"
 #include <cuda_runtime.h>
 #include <vector>
 #include <algorithm>
 #include <cmath>
 #include <cfloat>
 #include <cstring>
+#include <memory>
 
 namespace omnifield {
 
@@ -40,6 +44,24 @@ struct Marcher_ {
 
     // Parsed host-side nodes
     std::vector<SceneNode> nodes;
+    
+    // GPU acceleration engines
+    std::unique_ptr<cuda::CutlassTransformEngine> transform_engine_;
+    std::unique_ptr<cuda::ProceduralSdfGenerator> sdf_generator_;
+    
+    // Device memory for GPU operations
+    float* d_image_buffer_;
+    SceneNode* d_scene_nodes_;
+    int image_width_;
+    int image_height_;
+    
+    // CUDA streams for concurrent execution
+    cudaStream_t render_stream_;
+    cudaStream_t compute_stream_;
+    
+    // Performance profiling
+    cudaEvent_t start_event_;
+    cudaEvent_t end_event_;
 };
 
 } // namespace omnifield
@@ -197,15 +219,107 @@ extern "C" {
 // ---------------- lifecycle ----------------
 MarchResult march_create(MarcherHandle_t* out, const MarcherConfig* cfg){
     if (!out || !cfg) return MARCH_ERROR_INVALID;
+    
     *out = new Marcher_();
     (*out)->cfg = *cfg;
     (*out)->perf.assign(PERF_COUNTER_COUNT, 0);
-    cudaFree(0);
+    
+    // Initialize CUDA context
+    cudaError_t cuda_result = cudaFree(0);
+    if (cuda_result != cudaSuccess) {
+        delete *out;
+        *out = nullptr;
+        return MARCH_ERROR_INVALID;
+    }
+    
+    // Initialize GPU acceleration engines
+    try {
+        (*out)->transform_engine_ = std::make_unique<cuda::CutlassTransformEngine>(1024);
+        (*out)->sdf_generator_ = std::make_unique<cuda::ProceduralSdfGenerator>(128);
+        
+        // Initialize engines
+        cuda_result = (*out)->transform_engine_->initialize();
+        if (cuda_result != cudaSuccess) {
+            delete *out;
+            *out = nullptr;
+            return MARCH_ERROR_INVALID;
+        }
+        
+        cuda_result = (*out)->sdf_generator_->initialize();
+        if (cuda_result != cudaSuccess) {
+            delete *out;
+            *out = nullptr;
+            return MARCH_ERROR_INVALID;
+        }
+        
+        // Create CUDA streams
+        cuda_result = cudaStreamCreate(&(*out)->render_stream_);
+        if (cuda_result != cudaSuccess) {
+            delete *out;
+            *out = nullptr;
+            return MARCH_ERROR_INVALID;
+        }
+        
+        cuda_result = cudaStreamCreate(&(*out)->compute_stream_);
+        if (cuda_result != cudaSuccess) {
+            delete *out;
+            *out = nullptr;
+            return MARCH_ERROR_INVALID;
+        }
+        
+        // Create CUDA events for profiling
+        cuda_result = cudaEventCreate(&(*out)->start_event_);
+        if (cuda_result != cudaSuccess) {
+            delete *out;
+            *out = nullptr;
+            return MARCH_ERROR_INVALID;
+        }
+        
+        cuda_result = cudaEventCreate(&(*out)->end_event_);
+        if (cuda_result != cudaSuccess) {
+            delete *out;
+            *out = nullptr;
+            return MARCH_ERROR_INVALID;
+        }
+        
+        // Initialize device memory
+        (*out)->d_image_buffer_ = nullptr;
+        (*out)->d_scene_nodes_ = nullptr;
+        (*out)->image_width_ = 0;
+        (*out)->image_height_ = 0;
+        
+    } catch (const std::exception&) {
+        delete *out;
+        *out = nullptr;
+        return MARCH_ERROR_INVALID;
+    }
+    
     return MARCH_SUCCESS;
 }
 
 MarchResult march_destroy(MarcherHandle_t h){
     if (!h) return MARCH_ERROR_INVALID;
+    
+    // Cleanup CUDA resources
+    if (h->d_image_buffer_) {
+        cudaFree(h->d_image_buffer_);
+    }
+    if (h->d_scene_nodes_) {
+        cudaFree(h->d_scene_nodes_);
+    }
+    if (h->render_stream_) {
+        cudaStreamDestroy(h->render_stream_);
+    }
+    if (h->compute_stream_) {
+        cudaStreamDestroy(h->compute_stream_);
+    }
+    if (h->start_event_) {
+        cudaEventDestroy(h->start_event_);
+    }
+    if (h->end_event_) {
+        cudaEventDestroy(h->end_event_);
+    }
+    
     delete h;
     return MARCH_SUCCESS;
 }
@@ -282,10 +396,99 @@ MarchResult march_update_scene_with_transforms(
     return MARCH_SUCCESS;
 }
 
-MarchResult march_render_gl(MarcherHandle_t h, unsigned int, uint32_t, uint32_t,
-                            const Camera*, RenderStats* s){
-    if (!h) return MARCH_ERROR_INVALID;
-    if (s) *s = {};
+MarchResult march_render_gl(MarcherHandle_t h, unsigned int texture_id, uint32_t width, uint32_t height,
+                            const Camera* camera, RenderStats* stats){
+    if (!h || !camera) return MARCH_ERROR_INVALID;
+    
+    // Allocate or resize device image buffer if needed
+    if (h->image_width_ != width || h->image_height_ != height) {
+        if (h->d_image_buffer_) {
+            cudaFree(h->d_image_buffer_);
+        }
+        
+        size_t image_size = width * height * sizeof(float);
+        cudaError_t result = cudaMalloc(&h->d_image_buffer_, image_size);
+        if (result != cudaSuccess) {
+            return MARCH_ERROR_INVALID;
+        }
+        
+        h->image_width_ = width;
+        h->image_height_ = height;
+    }
+    
+    // Upload scene data to GPU if needed
+    if (h->d_scene_nodes_ == nullptr && !h->nodes.empty()) {
+        size_t nodes_size = h->nodes.size() * sizeof(SceneNode);
+        cudaError_t result = cudaMalloc(&h->d_scene_nodes_, nodes_size);
+        if (result != cudaSuccess) {
+            return MARCH_ERROR_INVALID;
+        }
+        
+        result = cudaMemcpyAsync(h->d_scene_nodes_, h->nodes.data(), nodes_size,
+                                cudaMemcpyHostToDevice, h->render_stream_);
+        if (result != cudaSuccess) {
+            return MARCH_ERROR_INVALID;
+        }
+    }
+    
+    // Start timing
+    cudaEventRecord(h->start_event_, h->render_stream_);
+    
+    // Convert camera parameters to CUDA float3
+    float3 camera_pos = make_float3(camera->position.x, camera->position.y, camera->position.z);
+    float3 camera_dir = normalize(make_float3(camera->direction.x, camera->direction.y, camera->direction.z));
+    float3 camera_up = normalize(make_float3(camera->up.x, camera->up.y, camera->up.z));
+    
+    // Launch optimized CUDA sphere tracing kernel
+    dim3 block(16, 16);
+    dim3 grid((width + block.x - 1) / block.x, (height + block.y - 1) / block.y);
+    
+    cuda::cuda_sphere_trace_optimized<<<grid, block, 0, h->render_stream_>>>(
+        h->d_image_buffer_,
+        width,
+        height,
+        camera_pos,
+        camera_dir,
+        camera_up,
+        camera->fovY,
+        camera->aspect,
+        h->cfg.maxSteps,
+        h->cfg.baseEpsilon
+    );
+    
+    // Check for kernel launch errors
+    cudaError_t kernel_result = cudaGetLastError();
+    if (kernel_result != cudaSuccess) {
+        return MARCH_ERROR_INVALID;
+    }
+    
+    // End timing
+    cudaEventRecord(h->end_event_, h->render_stream_);
+    cudaEventSynchronize(h->end_event_);
+    
+    // Calculate render time
+    float render_time_ms = 0.0f;
+    cudaEventElapsedTime(&render_time_ms, h->start_event_, h->end_event_);
+    
+    // Copy result to OpenGL texture (if texture_id is valid)
+    if (texture_id != 0) {
+        // Map OpenGL texture to CUDA resource and copy data
+        // This would require OpenGL-CUDA interop setup
+        // For now, we just synchronize the stream
+        cudaStreamSynchronize(h->render_stream_);
+    }
+    
+    // Fill in render statistics
+    if (stats) {
+        stats->totalRays = width * height;
+        stats->totalSteps = 0; // Would need to be accumulated from kernel
+        stats->avgSteps = 0.0f;
+        stats->maxSteps = h->cfg.maxSteps;
+        stats->missPct = 0.0f; // Would need to be calculated from kernel
+        stats->polishPct = 0.0f;
+        stats->renderTimeMs = render_time_ms;
+    }
+    
     return MARCH_SUCCESS;
 }
 
@@ -348,4 +551,35 @@ MarchResult march_pick(MarcherHandle_t h, const Ray* ray, HitInfo* out){
     return MARCH_SUCCESS;
 }
 
+// Helper functions for CUDA integration
+__device__ __forceinline__ float3 make_float3(float x, float y, float z) {
+    float3 result;
+    result.x = x;
+    result.y = y;
+    result.z = z;
+    return result;
+}
+
 } // extern "C"
+
+// Helper functions for CUDA integration  
+__device__ __forceinline__ float3 make_float3_device(float x, float y, float z) {
+    float3 result;
+    result.x = x;
+    result.y = y;
+    result.z = z;
+    return result;
+}
+
+__device__ __forceinline__ float3 normalize_device(const float3& v) {
+    float len = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+    if (len > 1e-6f) {
+        float3 result;
+        result.x = v.x / len;
+        result.y = v.y / len;
+        result.z = v.z / len;
+        return result;
+    }
+    float3 result = {0.0f, 0.0f, 1.0f};
+    return result;
+}
