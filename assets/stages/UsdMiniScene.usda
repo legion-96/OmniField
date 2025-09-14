@@ -1,1 +1,35 @@
 #usda 1.0
+(
+    doc = "OmniField Mini Scene v0.2 — placeholder analytic scene"
+)
+
+def Xform "World"
+{
+    # Sphere at (-0.5,0,0), radius 0.6
+    def Xform "Sphere1" {
+        customData = {
+            string sdf_type      = "sphere"
+            double radius        = 0.6
+            double3 translate    = (-0.5, 0, 0)
+        }
+    }
+
+    # Box at (+0.5,0,0), half-extents (0.45,0.45,0.45)
+    def Xform "Box1" {
+        customData = {
+            string sdf_type      = "box"
+            double3 halfExtents  = (0.45, 0.45, 0.45)
+            double3 translate    = ( 0.5, 0, 0)
+        }
+    }
+
+    # CSG hint: smooth union of Sphere1 and Box1, k=0.2
+    def Scope "CSG" {
+        customData = {
+            string op            = "smoothUnion"
+            float k              = 0.2
+            string a             = "/World/Sphere1"
+            string b             = "/World/Box1"
+        }
+    }
+}
