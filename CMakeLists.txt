@@ -1,32 +1,44 @@
 cmake_minimum_required(VERSION 3.24)
 project(OmniField LANGUAGES C CXX CUDA)
 
+# Toolchain / standards
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-option(WITH_CUDA "Enable CUDA" ON)
+enable_language(CUDA)
+find_package(CUDAToolkit 12.0 REQUIRED)
 
-if (WITH_CUDA)
-  find_package(CUDAToolkit 12.0 REQUIRED)
-  enable_language(CUDA)
-endif()
+# Target your RTX 4060 (Ada, SM_89)
+set(CMAKE_CUDA_ARCHITECTURES 89)
+set(CMAKE_CUDA_STANDARD 17)
+set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+set(CMAKE_CUDA_EXTENSIONS OFF)
+set(CMAKE_CUDA_RUNTIME_LIBRARY Static)
 
-add_library(omnifield_core STATIC
-  src/core/marcher/cuda_marcher_core.h
+# ---- Single EXE (everything compiled in) ----
+add_executable(omnifield_demo
+  app/example_demo.cpp
   src/core/marcher/cuda_marcher_impl.cu
-  src/host/usd_loader/UsdDeviceSceneLoader.h
+  src/core/marcher/sdf_primitives_impl.cu
   src/host/usd_loader/UsdDeviceSceneLoader.cpp
-  app/demo_scenes.h
 )
 
-target_include_directories(omnifield_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/app)
-if (WITH_CUDA)
-  target_link_libraries(omnifield_core PUBLIC CUDA::cudart)
-endif()
-# Set this to your GPU: 86 (Ampere), 89 (Ada). Avoid 75 with CUDA 13.
-set_target_properties(omnifield_core PROPERTIES CUDA_ARCHITECTURES 89)
+target_include_directories(omnifield_demo PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/src
+  ${CMAKE_CURRENT_SOURCE_DIR}/app
+)
 
-add_executable(omnifield_demo app/example_demo.cpp)
-target_link_libraries(omnifield_demo PRIVATE omnifield_core)
-target_include_directories(omnifield_demo PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/app)
+# Make multi-.cu builds link correctly
+set_target_properties(omnifield_demo PROPERTIES
+  CUDA_SEPARABLE_COMPILATION ON
+  CUDA_RESOLVE_DEVICE_SYMBOLS ON
+)
+
+# Clean per-language flags (no leakage into NVCC)
+target_compile_options(omnifield_demo PRIVATE
+  $<$<COMPILE_LANGUAGE:CXX>:/W3 /permissive- /Zc:__cplusplus /MP>
+  $<$<COMPILE_LANGUAGE:CUDA>:--extended-lambda -lineinfo --allow-unsupported-compiler>
+)
+
+# Link only cudart here; device link is handled by the CUDA target + properties above
+target_link_libraries(omnifield_demo PRIVATE CUDA::cudart)
