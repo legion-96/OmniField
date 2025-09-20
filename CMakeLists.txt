@@ -1,25 +1,26 @@
 cmake_minimum_required(VERSION 3.24)
 project(OmniField LANGUAGES C CXX CUDA)
 
-# Toolchain / standards
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 enable_language(CUDA)
 find_package(CUDAToolkit 12.0 REQUIRED)
 
-# Target your RTX 4060 (Ada, SM_89)
+# RTX 4060 (Ada)
 set(CMAKE_CUDA_ARCHITECTURES 89)
 set(CMAKE_CUDA_STANDARD 17)
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 set(CMAKE_CUDA_EXTENSIONS OFF)
-set(CMAKE_CUDA_RUNTIME_LIBRARY Static)
 
-# ---- Single EXE (everything compiled in) ----
+# Use static CUDA runtime AND static MSVC runtime to match (no LNK4098)
+set(CMAKE_CUDA_RUNTIME_LIBRARY Static)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")  # /MT and /MTd
+
+# ---- Single EXE using UNITY .cu (no device-link step) ----
 add_executable(omnifield_demo
   app/example_demo.cpp
-  src/core/marcher/cuda_marcher_impl.cu
-  src/core/marcher/sdf_primitives_impl.cu
+  app/unity_all.cu
   src/host/usd_loader/UsdDeviceSceneLoader.cpp
 )
 
@@ -28,17 +29,16 @@ target_include_directories(omnifield_demo PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/app
 )
 
-# Make multi-.cu builds link correctly
+# UNITY means no nvcc -dlink
 set_target_properties(omnifield_demo PROPERTIES
-  CUDA_SEPARABLE_COMPILATION ON
-  CUDA_RESOLVE_DEVICE_SYMBOLS ON
+  CUDA_SEPARABLE_COMPILATION OFF
+  CUDA_RESOLVE_DEVICE_SYMBOLS OFF
 )
 
-# Clean per-language flags (no leakage into NVCC)
 target_compile_options(omnifield_demo PRIVATE
   $<$<COMPILE_LANGUAGE:CXX>:/W3 /permissive- /Zc:__cplusplus /MP>
   $<$<COMPILE_LANGUAGE:CUDA>:--extended-lambda -lineinfo --allow-unsupported-compiler>
 )
 
-# Link only cudart here; device link is handled by the CUDA target + properties above
-target_link_libraries(omnifield_demo PRIVATE CUDA::cudart)
+target_link_libraries(omnifield_demo PRIVATE CUDA::cudart_static)
+
